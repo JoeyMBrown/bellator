@@ -44,4 +44,28 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the workouts for the user.
+     */
+    public function exercises(): HasMany
+    {
+        return $this->hasMany(Exercise::class);
+    }
+
+    /**
+     * Get the workouts for the user.
+     */
+    public function exerciseSets(): HasMany
+    {
+        return $this->hasMany(ExerciseSet::class);
+    }
+
+    /**
+     * Get the workouts for the user.
+     */
+    public function workouts(): HasMany
+    {
+        return $this->hasMany(Workout::class);
+    }
 }
