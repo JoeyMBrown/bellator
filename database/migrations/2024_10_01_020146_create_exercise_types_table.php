@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 40);
             $table->string('description');
-            $table->bigInteger('created_by_user_id');
+            $table->unsignedBigInteger('created_by_user_id');
             $table->timestamps();
             $table->softDeletes();
 
