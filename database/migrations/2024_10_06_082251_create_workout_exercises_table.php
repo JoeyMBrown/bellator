@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('description');
             $table->unsignedBigInteger('exercise_type_id');
             $table->unsignedBigInteger('workout_id');
-
             $table->timestamps();
             $table->softDeletes();
 
