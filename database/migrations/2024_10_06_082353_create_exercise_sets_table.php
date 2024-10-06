@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('repetitions');
             $table->unsignedBigInteger('weight')->comment("By default every weight will be stored in lbs.");
-            $table->unsignedBigInteger('exercise_id');
+            $table->unsignedBigInteger('workout_exercise_id');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('exercise_id')->references('id')->on('exercises');
+            $table->foreign('workout_exercise_id')->references('id')->on('workout_exercises');
         });
     }
 
