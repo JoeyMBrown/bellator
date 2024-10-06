@@ -4,27 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ExerciseSet extends Model
+class WorkoutExercise extends Model
 {
     use HasFactory;
-    
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'repetitions',
-        'weight'
+        //
     ];
 
     /**
-     * Get the workout exercise that owns the exercise set.
+     * Get the exercise sets for the workout exercise.
      */
-    public function workoutExercise(): BelongsTo
+    public function exerciseSets(): HasMany
     {
-        return $this->belongsTo(WorkoutExercise::class);
+        return $this->hasMany(ExerciseSet::class);
     }
 }

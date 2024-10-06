@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Exercise extends Model
 {
@@ -28,26 +30,10 @@ class Exercise extends Model
     }
 
     /**
-     * Get the user that owns the exercise.
+     * The workouts that belong to the exercise.
      */
-    public function user(): BelongsTo
+    public function workouts(): BelongsToMany
     {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the workout that owns the exercise.
-     */
-    public function workout(): BelongsTo
-    {
-        return $this->belongsTo(Workout::class);
-    }
-
-    /**
-     * Get the exercises sets for the exercise.
-     */
-    public function exerciseSets(): HasMany
-    {
-        return $this->hasMany(ExerciseSet::class);
+        return $this->belongsToMany(Workout::class, 'workout_exercises');
     }
 }
