@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name', 40);
             $table->string('description');
-            $table->unsignedBigInteger('exercise_type_id');
+            $table->unsignedBigInteger('exercise_id');
             $table->unsignedBigInteger('workout_id');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('exercise_type_id')->references('id')->on('exercise_types');
+            $table->foreign('exercise_id')->references('id')->on('exercises');
             $table->foreign('workout_id')->references('id')->on('workouts');
         });
     }
