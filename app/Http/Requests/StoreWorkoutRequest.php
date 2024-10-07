@@ -11,7 +11,7 @@ class StoreWorkoutRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class StoreWorkoutRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:40'],
             'description' => ['string', 'max:255'],
-            'workout_type_id' => ['integer']
+            'workout_type_id' => ['numeric']
         ];
     }
 }
