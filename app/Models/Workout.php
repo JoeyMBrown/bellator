@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Workout extends Model
 {
@@ -40,8 +41,8 @@ class Workout extends Model
     /**
      * The exercises that belong to the workout.
      */
-    public function exercises(): BelongsToMany
+    public function exercises(): HasMany
     {
-        return $this->belongsToMany(Exercise::class, 'workout_exercises');
+        return $this->hasMany(Exercise::class);
     }
 }
