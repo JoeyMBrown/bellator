@@ -1,5 +1,8 @@
+import BreadcrumbNav from '@/Components/Workouts/BreadcrumbNav';
+import CreateForm from '@/Components/Workouts/CreateForm';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import { Box } from '@mui/material';
 
 export default function Create() {
     return (
@@ -11,6 +14,9 @@ export default function Create() {
             }
         >
             <Head title="Create Workout" />
+
+            <BreadcrumbNav></BreadcrumbNav>
+            <CreateForm></CreateForm>
 
         </AuthenticatedLayout>
     );
