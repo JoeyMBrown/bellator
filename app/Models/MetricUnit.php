@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class WorkoutType extends Model
+class MetricUnit extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -22,10 +22,18 @@ class WorkoutType extends Model
     ];
 
     /**
-     * Get the workouts for the workout type.
+     * The exercise logs that belong to the metric unit.
      */
-    public function workouts(): HasMany
+    public function exerciseLogs(): HasMany
     {
-        return $this->hasMany(Workout::class);
+        return $this->hasMany(ExerciseLog::class);
+    }
+
+    /**
+     * The exercise points history that belong to the metric unit.
+     */
+    public function exercisePointsHistory(): HasMany
+    {
+        return $this->hasMany(ExercisePointHistory::class);
     }
 }

@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exercises', function (Blueprint $table) {
+        Schema::create('workouts', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 40);
-            $table->string('description');
-            $table->unsignedBigInteger('exercise_type_id');
+            $table->timestamp('workout_date', precision: 0);
+            $table->foreignId('workout_type_id')->nullable()->constrained('workout_types');
+            $table->foreignUuid('user_id')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('exercise_type_id')->references('id')->on('exercise_types');
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exercises');
+        Schema::dropIfExists('workouts');
     }
 };
