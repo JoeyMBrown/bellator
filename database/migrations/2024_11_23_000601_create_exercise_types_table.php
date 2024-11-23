@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('exercise_types', function (Blueprint $table) {
             $table->id();
+            $table->string('name', length: 60);
+            $table->string('description', length: 140)->nullable();
+            $table->foreignUuid('created_by_user_id')->constrained('users');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

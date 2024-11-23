@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('workout_types', function (Blueprint $table) {
             $table->id();
             $table->string('name', length: 60);
-            $table->string('description', length: 140);
-            $table->foreignUuid('created_by_user_guid');
+            $table->string('description', length: 140)->nullable();
+            $table->foreignUuid('created_by_user_id')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });
