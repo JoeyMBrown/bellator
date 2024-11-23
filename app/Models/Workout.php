@@ -18,8 +18,7 @@ class Workout extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'description',
+        'workout_date',
         'workout_type_id',
         'user_id'
     ];

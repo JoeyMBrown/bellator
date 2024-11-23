@@ -1,4 +1,5 @@
-import { useForm } from '@inertiajs/react'
+import { useForm } from '@inertiajs/react';
+import dayjs, { Dayjs as DayjsType } from 'dayjs';
 import {
     Autocomplete,
     Box,
@@ -7,6 +8,8 @@ import {
     Paper,
     TextField
 } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 
 export default function CreateForm() {
     type workoutTypeOption = {
@@ -15,8 +18,8 @@ export default function CreateForm() {
     }
 
     interface formData {
-        name: string,
-        description: string,
+        workout_date_selection: DayjsType,
+        workout_date: string | null,
         workout_type_id: number | null,
     }
 
@@ -41,14 +44,25 @@ export default function CreateForm() {
         setData('workout_type_id', value?.id || null);
     };
 
-    const { data, setData, post, processing, errors } = useForm<formData>({
-        name: '',
-        description: '',
-        workout_type_id: 1,
+    const handleWorkoutDateChange = (event: any, value: DayjsType) => {
+        setData({
+            ...data,
+            'workout_date': value.format('YYYY-MM-DD HH:mm:ss'), //TODO: This will need stored in UTC format to avoid confusion.  Need cast on backend.
+            'workout_date_selection': value
+        });
+    };
+
+    const { data, setData, post, processing, errors, transform } = useForm<formData>({
+        workout_date_selection: dayjs(),
+        workout_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        workout_type_id: null,
     })
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // TODO: Validation
+
         post(route('workout.store'));
     }
 
@@ -64,29 +78,14 @@ export default function CreateForm() {
                     width: '80%'
                 }}
             >
-                <TextField
-                    value={data.name}
-                    onChange={e => setData('name', e.target.value)}
-                    id="outlined-basic"
-                    label="Name"
-                    variant="outlined"
-                    required
-                    size="small"
-                    fullWidth
-                    sx={{ marginTop: 3 }}
-                />
 
-                <TextField
-                    value={data.description}
-                    onChange={e => setData('description', e.target.value)}
-                    id="outlined-basic"
-                    label="Description"
-                    variant="outlined"
-                    required
-                    size="small"
-                    fullWidth
-                    sx={{ marginTop: 3 }}
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        label="Date of Workout"
+                        value={data.workout_date_selection}
+                        onChange={handleWorkoutDateChange}
+                    />
+                </LocalizationProvider>
 
                 <Autocomplete
                     onChange={handleWorkoutTypeChange}
@@ -101,7 +100,7 @@ export default function CreateForm() {
             </Box>
 
             <Container className="mx-6 mt-12" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button variant="contained" type="submit" onClick={handleSubmit}>Create Workout</Button>
+                <Button variant="contained" type="submit" disabled={processing} onClick={handleSubmit}>Create Workout</Button>
             </Container>
         </Paper>
     );

@@ -22,9 +22,8 @@ class StoreWorkoutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:40'],
-            'description' => ['string', 'max:255'],
-            'workout_type_id' => ['numeric']
+            'workout_date' => ['required'],
+            'workout_type_id' => ['numeric', 'nullable']
         ];
     }
 }
