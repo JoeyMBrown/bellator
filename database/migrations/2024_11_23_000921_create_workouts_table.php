@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('workouts', function (Blueprint $table) {
             $table->id();
-            $table->string('name', length: 60);
-            $table->string('description', length: 140)->nullable();
+            $table->timestamp('workout_date', precision: 0);
             $table->foreignId('workout_type_id')->constrained('workout_types');
             $table->foreignUuid('user_id')->constrained('users');
             $table->timestamps();
