@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('workouts', function (Blueprint $table) {
             $table->id();
             $table->timestamp('workout_date', precision: 0);
-            $table->foreignId('workout_type_id')->constrained('workout_types');
+            $table->foreignId('workout_type_id')->nullable()->constrained('workout_types');
             $table->foreignUuid('user_id')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
