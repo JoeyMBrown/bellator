@@ -20,6 +20,7 @@ class WorkoutController extends Controller
             // TODO: Abstract to service class
             // TODO: Create value object for workout_date that provides human
             // formatted string.
+            // TODO: Gate to workouts belonging to logged in user.
         ]);
     }
 
