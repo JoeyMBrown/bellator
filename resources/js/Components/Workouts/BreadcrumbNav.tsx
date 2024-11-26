@@ -4,17 +4,23 @@ import {
     Typography
 } from '@mui/material';
 
-export default function BreadcrumbNav() {
+interface BreadcrumbNav {
+    currentPage: string;
+}
+
+const BreadcrumbNav: React.FC<BreadcrumbNav> = ({ currentPage }) => {
     return (
-        <Breadcrumbs aria-label="breadcrumb">
+        <Breadcrumbs aria-label="breadcrumb" sx={{ my: '3rem' }}>
                 <Link href={route('dashboard')}>
                     Dashboard
                 </Link>
 
-                <Link href={route('workout.create')}> {/** TODO: Change to workout.index when route is defined */}
+                <Link href={route('workout.index')}>
                     Workouts
                 </Link>
-            <Typography sx={{ color: 'text.primary' }}>Create</Typography>
+            <Typography sx={{ color: 'text.primary' }}>{currentPage}</Typography>
         </Breadcrumbs>
     );
 }
+
+export default BreadcrumbNav;
