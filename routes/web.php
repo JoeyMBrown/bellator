@@ -21,7 +21,9 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/workout/create', [WorkoutController::class, 'create'])->name('workout.create');
+    Route::get('/workouts', [WorkoutController::class, 'index'])->name('workout.index');
     Route::post('/workout', [WorkoutController::class, 'store'])->name('workout.store');
+    Route::get('/workout/{id}', [WorkoutController::class, 'show'])->name('workout.show');
 });
 
 Route::middleware('auth')->group(function () {

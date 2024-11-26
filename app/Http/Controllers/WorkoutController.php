@@ -15,7 +15,12 @@ class WorkoutController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Workouts/Index', [
+            'workouts' => Workout::all(),
+            // TODO: Abstract to service class
+            // TODO: Create value object for workout_date that provides human
+            // formatted string.
+        ]);
     }
 
     /**
