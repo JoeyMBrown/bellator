@@ -32,7 +32,7 @@ const CreateExerciseModal: React.FC<ModalProps> = ({ open, handleClose, exercise
 
     const handleSubmit = () => {
         post( route('workout.exercise.store', { id: workoutId }) );
-        // post to /workout/{id}/exercise
+        // post to /workout/{id}/exercise properly
         // TODO: Post form data
         // TODO: Close Modal
     }
