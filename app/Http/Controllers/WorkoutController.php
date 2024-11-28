@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWorkoutRequest;
 use App\Models\Workout;
+use App\Services\ExerciseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class WorkoutController extends Controller
 {
+    protected $exerciseService;
+
+    public function __construct(ExerciseService $exerciseService)
+    {
+        $this->exerciseService = $exerciseService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -39,7 +47,7 @@ class WorkoutController extends Controller
     {
         $data = $request->validated();
 
-        // TODO: Abstract to service class?
+        // TODO: Abstract to service class
         Workout::create(array_merge($data, ['user_id' => Auth::getUser()->id]));
 
         return redirect()->route('dashboard')->with('success', 'Workout created successfully.');
@@ -50,7 +58,13 @@ class WorkoutController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Inertia::render('Workouts/Show', [
+            'workout' => Workout::find($id),
+            'exerciseOptions' => $this->exerciseService->toOptionsArray()
+            // TODO: Create value object for workout_date that provides human
+            // formatted string.
+            // TODO: Gate to workouts belonging to logged in user.
+        ]);
     }
 
     /**
