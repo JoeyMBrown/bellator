@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkoutController;
+use App\Http\Controllers\WorkoutExerciseController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,6 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/workouts', [WorkoutController::class, 'index'])->name('workout.index');
     Route::post('/workout', [WorkoutController::class, 'store'])->name('workout.store');
     Route::get('/workout/{id}', [WorkoutController::class, 'show'])->name('workout.show');
+
+    Route::post('/workout/{id}/exercise', [WorkoutExerciseController::class, 'store'])->name('workout.exercise.store');
 });
 
 Route::middleware('auth')->group(function () {
