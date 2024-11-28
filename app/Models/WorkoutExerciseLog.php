@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ExerciseLog extends Model
+class WorkoutExerciseLog extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -22,9 +22,9 @@ class ExerciseLog extends Model
     ];
 
     /**
-     * Get the exercise that owns the exercise log.
+     * Get the workout exercise that owns the exercise log.
      */
-    public function exercise(): BelongsTo
+    public function workoutExercise(): BelongsTo
     {
         return $this->belongsTo(Exercise::class);
     }

@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exercise_logs', function (Blueprint $table) {
+        Schema::create('workout_exercises', function (Blueprint $table) {
             $table->id();
-            $table->decimal('exercise_metric', total: 16, places: 2);
-            $table->decimal('exercise_points', total: 8, places: 2);
+            $table->foreignId('workout_id')->constrained('workouts');
             $table->foreignId('exercise_id')->constrained('exercises');
-            $table->foreignId('metric_unit_id')->constrained('metric_units');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exercise_logs');
+        Schema::dropIfExists('workout_exercises');
     }
 };
