@@ -37,8 +37,8 @@ export default function Authenticated({
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href={route('workout.create')}
-                                    active={route().current('workout.create')}
+                                    href={route('workout.index')}
+                                    active={route().current('workout.index')}
                                 >
                                     Workouts
                                 </NavLink>

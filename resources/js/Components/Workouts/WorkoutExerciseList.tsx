@@ -6,37 +6,41 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Icon } from '@mui/material';
-import { Workout } from '@/types';
+import { Icon, Stack } from '@mui/material';
+import { Exercise } from '@/types';
 
-interface WorkoutList {
-    workouts: Array<null | Workout>;
+interface ExerciseListType {
+    workoutId: number,
+    exercises: Array<null | Exercise>;
 }
 
-const WorkoutList: React.FC<WorkoutList> = ({ workouts }) => {
+const ExerciseList: React.FC<ExerciseListType> = ({ workoutId, exercises }) => {
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Workout Date</TableCell>
+                        <TableCell>Exercise</TableCell>
                         <TableCell align="right">Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                 {
-                    workouts.map((workout) => (
+                    exercises.map((exercise, index) => (
                         <TableRow
-                            key={workout?.id}
+                            key={index}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                             <TableCell component="th" scope="row">
-                                <Link href={route('workout.show', workout?.id)}>
-                                    {workout?.workout_date}
+                                <Link href={route('workout.exercise.show', {workout_id: workoutId, exercise_id: exercise?.id})}> {/**TODO: Change link */}
+                                    {exercise?.name}
                                 </Link>
                             </TableCell>
                             <TableCell align="right" component="th" scope="row">
-                                <Icon sx={{ color: 'red'}}>delete</Icon>
+                                <Stack justifyContent='flex-end' flexDirection='row'>
+                                    <Icon sx={{ mx: 1, color: 'grey'}}>edit</Icon>
+                                    <Icon sx={{ mx: 1, color: 'red'}}>delete</Icon>
+                                </Stack>
                             </TableCell>
                         </TableRow>
                     ))
@@ -47,4 +51,4 @@ const WorkoutList: React.FC<WorkoutList> = ({ workouts }) => {
     );
 }
 
-export default WorkoutList;
+export default ExerciseList;
