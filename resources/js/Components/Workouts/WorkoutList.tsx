@@ -7,16 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Icon } from '@mui/material';
-
-interface Workout {// TODO: Move types to index.d.ts or global.d.ts - ask ChatGPT
-    id: number;
-    workout_date: string;
-    workout_type_id: null | number;
-    user_id: string;
-    created_at: null | string;
-    updated_at: null | string;
-    deleted_at: null | string;
-}
+import { Workout } from '@/types';
 
 interface WorkoutList {
     workouts: Array<null | Workout>;
@@ -36,14 +27,14 @@ const WorkoutList: React.FC<WorkoutList> = ({ workouts }) => {
                 {
                     workouts.map((workout) => (
                         <TableRow
-                            key={workout.id}
+                            key={workout?.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            <Link href={route('workout.show', workout.id)}>
-                                <TableCell component="th" scope="row">
-                                {workout.workout_date}
-                                </TableCell>
-                            </Link>
+                            <TableCell component="th" scope="row">
+                                <Link href={route('workout.show', workout?.id)}>
+                                    {workout?.workout_date}
+                                </Link>
+                            </TableCell>
                             <TableCell align="right" component="th" scope="row">
                                 <Icon sx={{ color: 'red'}}>delete</Icon>
                             </TableCell>
