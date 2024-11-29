@@ -1,8 +1,7 @@
-import BreadcrumbNav from '@/Components/Workouts/BreadcrumbNav';
 import WorkoutlistComponent  from '@/Components/Workouts/WorkoutList';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import { Container } from '@mui/material';
+import { Head, Link } from '@inertiajs/react';
+import { Breadcrumbs, Container, Typography } from '@mui/material';
 import { WorkoutList } from '@/types';
 
 const Create: React.FC<WorkoutList> = ({ workouts }) => {
@@ -19,9 +18,13 @@ const Create: React.FC<WorkoutList> = ({ workouts }) => {
 
             <Container>
 
-                <BreadcrumbNav
-                    currentPage='My Workouts'
-                />
+                <Breadcrumbs aria-label="breadcrumb" sx={{ my: '3rem' }}>
+                    <Link href={route('dashboard')}>
+                        Dashboard
+                    </Link>
+
+                    <Typography sx={{ color: 'text.primary' }}>Workouts</Typography>
+                </Breadcrumbs>
                 
                 <WorkoutlistComponent workouts={workouts} />
             </Container>
