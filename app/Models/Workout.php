@@ -46,7 +46,7 @@ class Workout extends Model
      */
     public function exercises(): BelongsToMany
     {
-        return $this->belongsToMany(Exercise::class, 'workout_exercises')->withTimestamps();
+        return $this->belongsToMany(Exercise::class, 'workout_exercises')->withTimestamps()->using(WorkoutExercise::class);
     }
 
     /**
