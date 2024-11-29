@@ -10,6 +10,16 @@ export interface Workout {
     workout_date: string;
     workout_type_id: null | number;
     user_id: string;
+    exercises?: Array<Exercise | []>;
+    created_at: null | string;
+    updated_at: null | string;
+    deleted_at: null | string;
+}
+
+export interface Exercise {
+    id: number;
+    name: string;
+    description: string;
     created_at: null | string;
     updated_at: null | string;
     deleted_at: null | string;
