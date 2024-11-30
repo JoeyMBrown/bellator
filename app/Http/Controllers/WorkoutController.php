@@ -24,11 +24,10 @@ class WorkoutController extends Controller
     public function index()
     {
         return Inertia::render('Workouts/Index', [
-            'workouts' => Workout::all(),
+            'workouts' => Workout::orderBy('workout_date', 'DESC')->where('user_id', Auth::user()->id)->get(),
             // TODO: Abstract to service class
             // TODO: Create value object for workout_date that provides human
             // formatted string.
-            // TODO: Gate to workouts belonging to logged in user.
         ]);
     }
 
@@ -59,11 +58,14 @@ class WorkoutController extends Controller
     public function show(string $id)
     {
         return Inertia::render('Workouts/Show', [
-            'workout' => Workout::find($id),
+            'workout' => Workout::with(['exercises' => function ($query) {
+                $query->orderBy('workout_exercises.created_at', 'ASC');
+            }])->find($id),
             'exerciseOptions' => $this->exerciseService->toOptionsArray()
+            // TODO: Abstract any long queries to service class
             // TODO: Create value object for workout_date that provides human
             // formatted string.
-            // TODO: Gate to workouts belonging to logged in user.
+            // TODO: Policy to restrict workouts belonging to logged in user.
         ]);
     }
 
