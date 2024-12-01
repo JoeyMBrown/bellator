@@ -31,10 +31,11 @@ const CreateExerciseModal: React.FC<ModalProps> = ({ open, handleClose, exercise
     const { data, setData, post, processing, errors } = useForm<Option | null>(null);
 
     const handleSubmit = () => {
+        // TODO: Validate form is valid before post
+
+        // TODO: post to /workout/{id}/exercise properly
         post( route('workout.exercise.store', { id: workoutId }) );
-        // post to /workout/{id}/exercise properly
-        // TODO: Post form data
-        // TODO: Close Modal
+        handleClose();
     }
 
     return (
