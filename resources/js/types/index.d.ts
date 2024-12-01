@@ -25,6 +25,36 @@ export interface Exercise {
     deleted_at: null | string;
 }
 
+export interface WorkoutExercise {
+    id: number;
+    workout_id: number;
+    exercise_id: number;
+    workout?: Workout;
+    exercise?: Exercise;
+    created_at: null | string;
+    update_at: null | string;
+    deleted_at: null | string;
+}
+
+export interface MetricUnit {
+    id: number;
+    name: string;
+    description: string;
+    created_at: null | string;
+    update_at: null | string;
+    deleted_at: null | string;
+}
+
+export interface WorkoutExerciseLog {
+    id: number;
+    repitions: number;
+    exercise_metric: number;
+    exercise_points: number;
+    workout_exercise_id: number;
+    metric_unit_id: number;
+    metric_unit?: MetricUnit;
+}
+
 export interface WorkoutList {
     workouts: Array<null | Workout>;
 }
