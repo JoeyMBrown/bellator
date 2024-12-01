@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('workout_id')->constrained('workouts');
             $table->foreignId('exercise_id')->constrained('exercises');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
