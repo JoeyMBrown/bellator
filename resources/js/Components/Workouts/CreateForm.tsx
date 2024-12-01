@@ -44,7 +44,7 @@ export default function CreateForm() {
         setData('workout_type_id', value?.id || null);
     };
 
-    const handleWorkoutDateChange = (event: any, value: DayjsType) => {
+    const handleWorkoutDateChange = (value: DayjsType) => {
         setData({
             ...data,
             'workout_date': value.format('YYYY-MM-DD HH:mm:ss'), //TODO: This will need stored in UTC format to avoid confusion.  Need cast on backend.
