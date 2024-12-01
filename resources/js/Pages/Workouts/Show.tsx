@@ -6,6 +6,7 @@ import { Workout, Option } from '@/types';
 import FAB from '@/Components/General/FAB';
 import { useState } from 'react';
 import CreateExerciseModal from '@/Components/Exercises/CreateExerciseModal';
+import ExerciseList from '@/Components/Workouts/WorkoutExerciseList';
 
 
 interface ShowProps {
@@ -15,7 +16,6 @@ interface ShowProps {
 
 const Show: React.FC<ShowProps> = ({ workout, exerciseOptions }) => {
 
-    console.log(exerciseOptions);
 
     const [showCreateExerciseModal, setShowCreateExerciseModal] = useState<boolean>(false);
     console.log(showCreateExerciseModal);
@@ -36,8 +36,8 @@ const Show: React.FC<ShowProps> = ({ workout, exerciseOptions }) => {
                     currentPage={workout.workout_date}
                 />
 
+                    <ExerciseList workoutId={workout.id} exercises={workout.exercises}/>
                 <Paper>
-                    
                 </Paper>
 
                 <FAB handleClick={() => setShowCreateExerciseModal(true)} />
