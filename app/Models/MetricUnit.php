@@ -22,11 +22,11 @@ class MetricUnit extends Model
     ];
 
     /**
-     * The exercise logs that belong to the metric unit.
+     * The workout exercise logs that belong to the metric unit.
      */
-    public function exerciseLogs(): HasMany
+    public function workoutExerciseLogs(): HasMany
     {
-        return $this->hasMany(ExerciseLog::class);
+        return $this->hasMany(WorkoutExerciseLog::class);
     }
 
     /**
