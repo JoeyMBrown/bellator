@@ -11,6 +11,8 @@ class WorkoutExercise extends Pivot
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'workout_exercises';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -26,6 +28,6 @@ class WorkoutExercise extends Pivot
      */
     public function workoutExerciseLogs(): HasMany
     {
-        return $this->hasMany(WorkoutExerciseLog::class);
+        return $this->hasMany(WorkoutExerciseLog::class, 'workout_exercise_id');
     }
 }
