@@ -26,7 +26,7 @@ class WorkoutExerciseLog extends Model
      */
     public function workoutExercise(): BelongsTo
     {
-        return $this->belongsTo(Exercise::class);
+        return $this->belongsTo(WorkoutExercise::class);
     }
 
     /**
