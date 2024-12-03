@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWorkoutExerciseRequest;
+use App\Models\Workout;
 use App\Models\WorkoutExercise;
 use App\Services\WorkoutExerciseService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class WorkoutExerciseController extends Controller
 {
@@ -39,21 +41,35 @@ class WorkoutExerciseController extends Controller
      */
     public function store(StoreWorkoutExerciseRequest $request, $id)
     {
-        $data = $request->validated();
+        $data = $request->validated(); // TODO: Update validation roles to ensure both the workout and exercise exist before storing.
 
         // TODO: Abstract to service class
-        // TODO: Clean this up
-        WorkoutExercise::create(['workout_id' => $id, 'exercise_id' => $data['id']]);
+        // TODO: Error handling of ALL controller methods
+        $workout = Workout::find($id);
 
-        return redirect()->route('workout.show', $id)->with('success', 'Workout created successfully.');
+        // This associates an exercise with the current workout.
+        $workout->exercises()->attach($data['id']);
+
+        return redirect()->route('workout.show', $id)->with('success', 'Exercise add to Workout.');
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $workout_id, string $exercise_id)
     {
-        //
+        return Inertia::render('Workouts/Exercises/Show', [
+            'workoutExercises' => WorkoutExercise::with([
+                    'workoutExerciseLogs.metricUnit',
+                    'exercise',
+                    'workout'
+                ])
+                ->where('exercise_id', $exercise_id)
+                ->where('workout_id', $workout_id)
+                ->firstOrFail(),
+            // TODO: Abstract to service class
+        ]);
     }
 
     /**
