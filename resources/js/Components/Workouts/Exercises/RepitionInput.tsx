@@ -7,7 +7,7 @@ interface RepitionInputProps {
     repitions: number | null;
     setData: (arg0: any, arg2: any) => void;
     setError: (arg0: any, arg2: any) => void;
-    error: string;
+    error: string | undefined;
 };
 
 const RepitionInput: React.FC<RepitionInputProps> = ({ repitions, setData, setError, error }) => {
