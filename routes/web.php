@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/workout/{id}', [WorkoutController::class, 'show'])->name('workout.show');
 
     Route::post('/workout/{id}/exercise', [WorkoutExerciseController::class, 'store'])->name('workout.exercise.store');
+    Route::get('/workout/{workout_id}/exercise/{exercise_id}', [WorkoutExerciseController::class, 'show'])->name('workout.exercise.show');
 });
 
 Route::middleware('auth')->group(function () {
