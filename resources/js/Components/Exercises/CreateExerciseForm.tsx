@@ -26,7 +26,7 @@ const CreateExerciseForm: React.FC<CreateExerciseFormProps> = ({ exerciseOptions
                 getOptionLabel={(option) => option?.name || ''}
                 value={data}
                 onChange={handleChange}
-                isOptionEqualToValue={(option, value) => option.id === value?.id} // Understand if this is relevant
+                isOptionEqualToValue={(option, value) => option.id === value?.id} // TODO: Understand if this is relevant
                 renderInput={ (params) => <TextField required variant="outlined" placeholder='EX: Bench Press' {...params} label="Exercise" /> }
                 sx={{ my: 1 }}
             />
