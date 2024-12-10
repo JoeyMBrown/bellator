@@ -1,13 +1,22 @@
-import { useForm } from '@inertiajs/react';
 import {
     Box,
-    Button,
-    Container,
-    Paper
+    Paper,
+    Stack,
+    Typography
 } from '@mui/material';
-import RepitionInput from './RepitionInput';
+import MetricUnitSelector from './MetricUnitSelector';
+import ExerciseLogFormRow from './ExerciseLogFormRow';
+import { useForm } from '@inertiajs/react';
+import { MetricUnit, WorkoutExerciseLog } from '@/types';
 
-export default function ExerciseLogForm() {
+interface ExerciseLogFormProps {
+    metricUnitOptions: Array<MetricUnit | []>;
+    workoutExerciseLogs: Array<WorkoutExerciseLog | [] >; //TODO: Typing on this is likely wrong.
+    workoutId: number;
+    workoutExerciseId: number;
+};
+
+const ExerciseLogForm: React.FC<ExerciseLogFormProps> = ({ metricUnitOptions, workoutExerciseLogs, workoutId, workoutExerciseId }) => {
     // TODO:
     // 1. Define a FormInputBox component that will be reused for different key points here.
     // 2. Implement specific components, repitionInput etc (that handle their own validation?)
@@ -15,14 +24,12 @@ export default function ExerciseLogForm() {
     // 3a. for all individual inputs.  They will need to be posted at same time so this should make sense.
 
     interface formData {
-        repitions: number | undefined,
-        workout_date: string | null,
-        workout_type_id: number | null,
+        selected_exercise_metric_unit: MetricUnit | null,
     }
 
-    const { data, setData, post, processing, setError, errors, clearErrors } = useForm({
-        repitions: 0,
-        remember: false,
+    // TODO: Prefill this with Exercise Metric for current Workout Exercise from DB.
+    const { data, setData, setError } = useForm<formData>({
+        selected_exercise_metric_unit: null
     });
 
     //TODO: Determine consistent Max Width / Min Width setting for form
@@ -39,19 +46,61 @@ export default function ExerciseLogForm() {
                     width: '80%'
                 }}
             >
+                <Box>
+                    <Stack direction="row" justifyContent='space-around' sx={{ my: 4 }}>
+                        <Stack justifyContent='center' alignContent='center'>
+                            <Typography>Repitions</Typography>
+                        </Stack>
+                        
+                        <Box>
+                            <MetricUnitSelector
+                                metricUnitOptions={metricUnitOptions}
+                                selectedMetricUnit={data.selected_exercise_metric_unit}
+                                setData={setData}
+                                setError={setError}
+                            />
+                        </Box>
+                    </Stack>
 
-                <RepitionInput
-                    repitions={data.repitions}
-                    setData={setData}
-                    setError={setError}
-                    error={errors.repitions}
-                />
+                    {/**
+                     * This form row will always exist as a new empty form that allows user to
+                     * create a new exercise log.
+                     */}
+                    
+                    <ExerciseLogFormRow
+                        exerciseLog={{}}
+                        metricUnitId={data.selected_exercise_metric_unit?.id}
+                        workoutId={workoutId}
+                        workoutExerciseId={workoutExerciseId}
+                    />
+
+                    {
+                        /** TODO: Each group of inputs will need to be it's own form component
+                         *  this will allow for rendering of multiple components where each
+                         *  component or group of inputs has it's pre-filled values from the
+                         *  DB or will allow for a blank form state.  This is the only way
+                         *  editing will work as well.
+                         */
+
+                        workoutExerciseLogs.map((exerciseLog) => {
+                            return (
+                                <ExerciseLogFormRow
+                                    key={exerciseLog.id}
+                                    exerciseLog={exerciseLog}
+                                    metricUnitId={data.selected_exercise_metric_unit?.id}
+                                    workoutId={workoutId}
+                                    workoutExerciseId={workoutExerciseId}
+                                />
+                            )
+                        })
+
+                    }
+                </Box>
 
             </Box>
 
-            <Container className="mx-6 mt-12" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button variant="contained" type="submit" disabled={processing}>Create Workout</Button>
-            </Container>
         </Paper>
     );
 }
+
+export default ExerciseLogForm;
