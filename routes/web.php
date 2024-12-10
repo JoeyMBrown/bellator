@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkoutController;
 use App\Http\Controllers\WorkoutExerciseController;
+use App\Http\Controllers\WorkoutExerciseLogController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,8 +27,19 @@ Route::middleware(['auth', 'verified'])->group(function (){
     Route::post('/workout', [WorkoutController::class, 'store'])->name('workout.store');
     Route::get('/workout/{id}', [WorkoutController::class, 'show'])->name('workout.show');
 
-    Route::post('/workout/{id}/exercise', [WorkoutExerciseController::class, 'store'])->name('workout.exercise.store');
-    Route::get('/workout/{workout_id}/exercise/{exercise_id}', [WorkoutExerciseController::class, 'show'])->name('workout.exercise.show');
+    Route::post(
+        '/workout/{id}/exercise',
+        [WorkoutExerciseController::class, 'store']
+    )->name('workout.exercise.store');
+    Route::get(
+        '/workout/{workout_id}/exercise/{exercise_id}',
+        [WorkoutExerciseController::class, 'show']
+    )->name('workout.exercise.show');
+
+    Route::post(
+        '/workout/{workout_id}/exercise/{exercise_id}/log',
+        [WorkoutExerciseLogController::class, 'store']
+    )->name('workout.exercise.log.store');
 });
 
 Route::middleware('auth')->group(function () {
