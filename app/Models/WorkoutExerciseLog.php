@@ -18,7 +18,9 @@ class WorkoutExerciseLog extends Model
      */
     protected $fillable = [
         'exercise_metric',
-        'exercise_points'
+        'metric_unit_id',
+        'repitions',
+        'workout_exercise_id'
     ];
 
     /**
