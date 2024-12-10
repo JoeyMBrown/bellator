@@ -3,14 +3,16 @@ import {
 } from '@mui/material';
 import React from 'react';
 
+// TODO: Fix typing for setData and setError methods, consider adding style prop?
 interface RepitionInputProps {
     repitions: number | null;
     setData: (arg0: any, arg2: any) => void;
     setError: (arg0: any, arg2: any) => void;
     error: string | undefined;
+    rest?: any;
 };
 
-const RepitionInput: React.FC<RepitionInputProps> = ({ repitions, setData, setError, error }) => {
+const RepitionInput: React.FC<RepitionInputProps> = ({ repitions, setData, setError, error, ...rest }) => {
 
     const validateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const regex = /^\d+$/;
@@ -35,6 +37,7 @@ const RepitionInput: React.FC<RepitionInputProps> = ({ repitions, setData, setEr
                 type='text'
                 onChange={validateChange}
                 value={repitions}
+                {...rest}
             />
     );
 }
