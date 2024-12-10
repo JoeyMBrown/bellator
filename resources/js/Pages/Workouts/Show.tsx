@@ -16,9 +16,7 @@ interface ShowProps {
 
 const Show: React.FC<ShowProps> = ({ workout, exerciseOptions }) => {
 
-
     const [showCreateExerciseModal, setShowCreateExerciseModal] = useState<boolean>(false);
-    console.log(showCreateExerciseModal);
 
     return (
         <AuthenticatedLayout
