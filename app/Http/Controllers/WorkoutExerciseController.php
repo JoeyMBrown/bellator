@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWorkoutExerciseRequest;
 use App\Models\Workout;
 use App\Models\WorkoutExercise;
-use App\Services\WorkoutExerciseService;
+use App\Services\MetricUnitService;
+// use App\Services\WorkoutExerciseService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,12 +14,15 @@ class WorkoutExerciseController extends Controller
 {
     protected $workoutExerciseService;
 
+    protected $metricUnitService;
+
     // TODO: Create service class
 
-    // public function __construct(WorkoutExerciseService $workoutExerciseService)
-    // {
+     public function __construct(MetricUnitService $metricUnitService)
+    {
     //     $this->workoutExerciseService = $workoutExerciseService;
-    // }
+        $this->metricUnitService = $metricUnitService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -50,7 +54,9 @@ class WorkoutExerciseController extends Controller
         // This associates an exercise with the current workout.
         $workout->exercises()->attach($data['id']);
 
-        return redirect()->route('workout.show', $id)->with('success', 'Exercise add to Workout.');
+        return redirect()
+            ->route('workout.show', $id)
+            ->with('success', 'Exercise added to Workout.');
 
     }
 
@@ -59,16 +65,16 @@ class WorkoutExerciseController extends Controller
      */
     public function show(string $workout_id, string $exercise_id)
     {
+        // TODO: Abstract to service class
+        
         return Inertia::render('Workouts/Exercises/Show', [
-            'workoutExercises' => WorkoutExercise::with([
+            'workoutExercise' => WorkoutExercise::with([
                     'workoutExerciseLogs.metricUnit',
                     'exercise',
                     'workout'
                 ])
-                ->where('exercise_id', $exercise_id)
-                ->where('workout_id', $workout_id)
-                ->firstOrFail(),
-            // TODO: Abstract to service class
+                ->find($exercise_id),
+            'metricUnitOptions' => $this->metricUnitService->toOptionsArray()
         ]);
     }
 

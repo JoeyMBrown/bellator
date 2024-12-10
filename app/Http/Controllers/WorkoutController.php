@@ -23,11 +23,14 @@ class WorkoutController extends Controller
      */
     public function index()
     {
+        // TODO: Abstract to service class
+        // TODO: Create value object for workout_date that provides human
+        // formatted string.
+
         return Inertia::render('Workouts/Index', [
-            'workouts' => Workout::orderBy('workout_date', 'DESC')->where('user_id', Auth::user()->id)->get(),
-            // TODO: Abstract to service class
-            // TODO: Create value object for workout_date that provides human
-            // formatted string.
+            'workouts' => Workout::orderBy('workout_date', 'DESC')
+                ->where('user_id', Auth::user()->id)
+                ->get(),
         ]);
     }
 
@@ -36,7 +39,9 @@ class WorkoutController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Workouts/Create', []);
+        return Inertia::render('Workouts/Create', [
+            //
+        ]);
     }
 
     /**
@@ -47,9 +52,11 @@ class WorkoutController extends Controller
         $data = $request->validated();
 
         // TODO: Abstract to service class
-        Workout::create(array_merge($data, ['user_id' => Auth::getUser()->id]));
+        $workout = Workout::create( array_merge($data, ['user_id' => Auth::getUser()->id]) );
 
-        return redirect()->route('dashboard')->with('success', 'Workout created successfully.');
+        return redirect()
+            ->route('workout.show', $workout->id)
+            ->with('success', 'Workout created successfully.');
     }
 
     /**
@@ -57,15 +64,16 @@ class WorkoutController extends Controller
      */
     public function show(string $id)
     {
+        // TODO: Abstract any long queries to service class
+        // TODO: Create value object for workout_date that provides human
+        // formatted string.
+        // TODO: Policy to restrict workouts belonging to logged in user.
+
         return Inertia::render('Workouts/Show', [
             'workout' => Workout::with(['exercises' => function ($query) {
                 $query->orderBy('workout_exercises.created_at', 'ASC');
             }])->find($id),
             'exerciseOptions' => $this->exerciseService->toOptionsArray()
-            // TODO: Abstract any long queries to service class
-            // TODO: Create value object for workout_date that provides human
-            // formatted string.
-            // TODO: Policy to restrict workouts belonging to logged in user.
         ]);
     }
 
