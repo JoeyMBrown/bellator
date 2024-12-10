@@ -17,9 +17,6 @@ return new class extends Migration
             $table->foreignId('exercise_id')->constrained('exercises');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->unique(['workout_id', 'exercise_id'])
-                ->comment('Enforces each workout can only contain a reference to 1 of each exercise.');
         });
     }
 
