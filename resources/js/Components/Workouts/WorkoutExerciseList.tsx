@@ -15,6 +15,7 @@ interface ExerciseListType {
 }
 
 const ExerciseList: React.FC<ExerciseListType> = ({ workoutId, exercises }) => {
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -32,7 +33,7 @@ const ExerciseList: React.FC<ExerciseListType> = ({ workoutId, exercises }) => {
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                             <TableCell component="th" scope="row">
-                                <Link href={route('workout.exercise.show', {workout_id: workoutId, exercise_id: exercise?.id})}> {/**TODO: Change link */}
+                                <Link href={ route('workout.exercise.show', {workout_id: workoutId, exercise_id: exercise?.pivot?.id}) }>
                                     {exercise?.name}
                                 </Link>
                             </TableCell>
