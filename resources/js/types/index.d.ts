@@ -34,6 +34,7 @@ export interface WorkoutExercise {
     created_at: null | string;
     update_at: null | string;
     deleted_at: null | string;
+    workout_exercise_logs?: Array<WorkoutExerciseLog | []>;
 }
 
 export interface MetricUnit {
