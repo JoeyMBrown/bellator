@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Icon, Stack } from '@mui/material';
+import { Icon, Stack, Typography } from '@mui/material';
 import { Exercise } from '@/types';
 
 interface ExerciseListType {
@@ -25,8 +25,19 @@ const ExerciseList: React.FC<ExerciseListType> = ({ workoutId, exercises }) => {
                         <TableCell align="right">Actions</TableCell>
                     </TableRow>
                 </TableHead>
+                
                 <TableBody>
                 {
+
+                    exercises.length === 0 ?
+                    <>
+                        <TableRow>
+                            <TableCell colSpan={2}>
+                                <Typography>Looks like you haven't created any exercises yet. Click the button below to create your first exercise.</Typography>
+                            </TableCell>
+                        </TableRow>
+                    </>
+                    :
                     exercises.map((exercise, index) => (
                         <TableRow
                             key={index}
