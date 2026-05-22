@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Icon } from '@mui/material';
+import { Button, Icon, Typography } from '@mui/material';
 import { Workout } from '@/types';
 
 interface WorkoutList {
@@ -24,23 +24,36 @@ const WorkoutList: React.FC<WorkoutList> = ({ workouts }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {
-                    workouts.map((workout) => (
-                        <TableRow
-                            key={workout?.id}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell component="th" scope="row">
-                                <Link href={route('workout.show', workout?.id)}>
-                                    {workout?.workout_date}
-                                </Link>
-                            </TableCell>
-                            <TableCell align="right" component="th" scope="row">
-                                <Icon sx={{ color: 'red'}}>delete</Icon>
-                            </TableCell>
-                        </TableRow>
-                    ))
-                }
+                    {
+                        workouts.map((workout) => (
+                            <TableRow
+                                key={workout?.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    <Link href={route('workout.show', workout?.id)}>
+                                        {workout?.workout_date}
+                                    </Link>
+                                </TableCell>
+                                <TableCell align="right" component="th" scope="row">
+                                    <Icon sx={{ color: 'red'}}>delete</Icon>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    }
+
+                    {workouts.length === 0 && (
+                        <>
+                            <Typography>Looks like you haven't created any workouts yet. Click the button below to create your first workout.</Typography>
+
+                            <Link href={route('workout.create')}>
+                                <Button variant="contained" color="primary">
+                                    Create Workout
+                                </Button>
+                            </Link>
+                        </>
+                    )}
+                    
                 </TableBody>
             </Table>
         </TableContainer>

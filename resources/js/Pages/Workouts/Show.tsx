@@ -6,7 +6,7 @@ import { Workout, Option } from '@/types';
 import FAB from '@/Components/General/FAB';
 import { useState } from 'react';
 import CreateExerciseModal from '@/Components/Exercises/CreateExerciseModal';
-import ExerciseList from '@/Components/Workouts/WorkoutExerciseList';
+import WorkoutExerciseCardList from '@/Components/Workouts/WorkoutExerciseCardList';
 
 
 interface ShowProps {
@@ -34,7 +34,7 @@ const Show: React.FC<ShowProps> = ({ workout, exerciseOptions }) => {
                     currentPage={workout.workout_date}
                 />
 
-                    <ExerciseList workoutId={workout.id} exercises={workout.exercises}/>
+                    <WorkoutExerciseCardList workoutId={workout.id} exercises={workout.exercises}/>
                 <Paper>
                 </Paper>
 
