@@ -16,7 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        $middleware->alias([
+            'group.member' => \App\Http\Middleware\EnsureUserHasGroup::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
