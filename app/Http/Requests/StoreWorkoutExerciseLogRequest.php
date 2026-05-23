@@ -22,7 +22,7 @@ class StoreWorkoutExerciseLogRequest extends FormRequest
     public function rules(): array //TODO: Flesh out rules, consider id naming convention here?
     {
         return [
-            'repitions' => ['required'],
+            'repetitions' => ['required'],
             'exercise_metric' => ['required'],
             'workout_exercise_id' => ['nullable'],
             'metric_unit_id' => ['nullable'],

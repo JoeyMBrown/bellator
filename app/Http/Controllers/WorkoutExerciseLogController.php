@@ -48,7 +48,7 @@ class WorkoutExerciseLogController extends Controller
         // TODO: Proper route redirection on save.
 
         WorkoutExerciseLog::create([
-            'repitions' => $data['repitions'],
+            'repetitions' => $data['repetitions'],
             'exercise_metric' => $data['exercise_metric'],
             'workout_exercise_id' => $exercise_id,
             'metric_unit_id' => $data['metric_unit_id']

@@ -13,40 +13,62 @@ class Exercise extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name',
-        'description'
+    public const MEASUREMENT_REPS_ONLY = 'reps_only';
+
+    public const MEASUREMENT_WEIGHTED_REPS = 'weighted_reps';
+
+    public const MEASUREMENT_DISTANCE = 'distance';
+
+    public const MEASUREMENT_DURATION = 'duration';
+
+    public const MEASUREMENT_TYPES = [
+        self::MEASUREMENT_REPS_ONLY,
+        self::MEASUREMENT_WEIGHTED_REPS,
+        self::MEASUREMENT_DISTANCE,
+        self::MEASUREMENT_DURATION,
     ];
 
-    /**
-     * Get the exercise type that owns the exercise.
-     */
-    public function exerciseType(): BelongsTo
+    protected $fillable = [
+        'name',
+        'description',
+        'group_id',
+        'measurement_type',
+        'created_by_user_id',
+    ];
+
+    public function group(): BelongsTo
     {
-        return $this->belongsTo(ExerciseType::class);
+        return $this->belongsTo(Group::class);
     }
 
-    /**
-     * The workout exercise logs that belong to the exercise.
-     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
+    }
+
     public function workoutExerciseLogs(): HasMany
     {
         return $this->hasMany(WorkoutExerciseLog::class);
     }
 
-    /**
-     * The workout that owns the exercise.
-     */
     public function workout(): BelongsToMany
     {
         return $this->belongsToMany(Workout::class, 'workout_exercises')
             ->withTimestamps()
             ->using(WorkoutExercise::class)
-            ->withPivot('id', 'exercise_id', 'workout_id');;
+            ->withPivot('id', 'exercise_id', 'workout_id');
+    }
+
+    public function points(): HasMany
+    {
+        return $this->hasMany(GroupExercisePoints::class);
+    }
+
+    public function activePointsForGroup(int $groupId): ?GroupExercisePoints
+    {
+        return $this->points()
+            ->where('group_id', $groupId)
+            ->whereNull('end_date')
+            ->first();
     }
 }

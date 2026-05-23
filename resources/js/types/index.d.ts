@@ -48,7 +48,7 @@ export interface MetricUnit {
 
 export interface WorkoutExerciseLog {
     id: number;
-    repitions: number;
+    repetitions: number;
     exercise_metric: number;
     exercise_points: number;
     workout_exercise_id: number;

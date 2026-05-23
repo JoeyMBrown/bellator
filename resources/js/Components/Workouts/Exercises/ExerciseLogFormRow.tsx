@@ -1,6 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { IconButton, Stack } from "@mui/material";
-import RepitionInput from "./RepitionInput";
+import RepetitionInput from "./RepetitionInput";
 import MetricInput from "./MetricInput";
 import { useEffect } from 'react';
 import { WorkoutExerciseLog } from '@/types';
@@ -19,7 +19,7 @@ const ExerciseLogFormRow: React.FC<ExerciseLogFormRowProps> = ({ exerciseLog, me
     }, [metricUnitId])
 
     const { data, setData, post, processing, setError, errors, clearErrors } = useForm({
-        repitions: 0,
+        repetitions: 0,
         exercise_metric: 0,
         metric_unit_id: metricUnitId
     });
@@ -31,11 +31,11 @@ const ExerciseLogFormRow: React.FC<ExerciseLogFormRowProps> = ({ exerciseLog, me
 
     return (
         <Stack flexDirection='row' justifyContent='space-between'>
-            <RepitionInput
-                repitions={exerciseLog?.repitions || data.repitions}
+            <RepetitionInput
+                repetitions={exerciseLog?.repetitions || data.repetitions}
                 setData={setData}
                 setError={setError}
-                error={errors.repitions}
+                error={errors.repetitions}
                 sx={{
                     px: 2
                 }}
