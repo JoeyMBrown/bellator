@@ -3,20 +3,21 @@ import { Head, useForm } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import { FormEvent } from 'react';
 
-interface CreateProps {
+interface EditProps {
+    workout: {
+        id: number;
+        workout_date: string;
+        notes: string | null;
+        group_ids: number[];
+    };
     availableGroups: Array<{ id: number; name: string }>;
-    defaultGroupId: number | null;
 }
 
-export default function Create({ availableGroups, defaultGroupId }: CreateProps) {
-    const { data, setData, post, processing, errors } = useForm({
-        workout_date: dayjs().format('YYYY-MM-DD'),
-        notes: '',
-        group_ids: defaultGroupId !== null
-            ? [defaultGroupId]
-            : availableGroups.length > 0
-                ? [availableGroups[0].id]
-                : [],
+export default function Edit({ workout, availableGroups }: EditProps) {
+    const { data, setData, patch, processing, errors } = useForm({
+        workout_date: dayjs(workout.workout_date).format('YYYY-MM-DD'),
+        notes: workout.notes ?? '',
+        group_ids: [...workout.group_ids],
     });
 
     const toggleGroup = (id: number) => {
@@ -30,24 +31,21 @@ export default function Create({ availableGroups, defaultGroupId }: CreateProps)
 
     const submit = (e: FormEvent) => {
         e.preventDefault();
-        post(route('workout.store'));
+        patch(route('workout.update', workout.id));
     };
 
     return (
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Log a workout
+                    Edit workout
                 </h2>
             }
         >
-            <Head title="Log a workout" />
+            <Head title="Edit workout" />
 
             <div className="mx-auto max-w-xl px-4 py-6 sm:px-6 lg:px-8">
-                <form
-                    onSubmit={submit}
-                    className="space-y-5 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800"
-                >
+                <form onSubmit={submit} className="space-y-5 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <div>
                         <label htmlFor="workout_date" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                             Date
@@ -65,7 +63,7 @@ export default function Create({ availableGroups, defaultGroupId }: CreateProps)
 
                     <div>
                         <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                            Notes <span className="text-xs text-gray-500">(optional, max 500)</span>
+                            Notes
                         </label>
                         <textarea
                             id="notes"
@@ -80,11 +78,8 @@ export default function Create({ availableGroups, defaultGroupId }: CreateProps)
 
                     <fieldset>
                         <legend className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                            Tag to groups
+                            Tagged groups
                         </legend>
-                        <p className="mt-1 text-xs text-gray-500">
-                            Tag the workout to every group it should count toward (at least one).
-                        </p>
                         <div className="mt-2 space-y-2">
                             {availableGroups.map((group) => (
                                 <label
@@ -110,9 +105,9 @@ export default function Create({ availableGroups, defaultGroupId }: CreateProps)
                         <button
                             type="submit"
                             disabled={processing}
-                            className="inline-flex h-11 items-center justify-center rounded-md bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+                            className="inline-flex h-11 items-center justify-center rounded-md bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
                         >
-                            Create workout
+                            Save
                         </button>
                     </div>
                 </form>

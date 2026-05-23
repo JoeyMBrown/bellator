@@ -42,6 +42,21 @@ export default function Show({ group }: ShowProps) {
                     </p>
                 )}
 
+                <div className="flex flex-wrap gap-2">
+                    <Link
+                        href={`${route('workout.create')}?group=${group.id}`}
+                        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                    >
+                        Log workout
+                    </Link>
+                    <Link
+                        href={route('workout.index')}
+                        className="rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-100 dark:ring-gray-600"
+                    >
+                        My workouts
+                    </Link>
+                </div>
+
                 <section className="rounded-lg bg-white p-5 shadow-sm dark:bg-gray-800">
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                         Invite code

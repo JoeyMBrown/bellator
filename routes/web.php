@@ -60,24 +60,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/groups/{group}/rubric/{exercise}', [GroupExercisePointsController::class, 'store'])
             ->name('groups.rubric.store');
 
-        Route::get('/workout/create', [WorkoutController::class, 'create'])->name('workout.create');
         Route::get('/workouts', [WorkoutController::class, 'index'])->name('workout.index');
+        Route::get('/workout/create', [WorkoutController::class, 'create'])->name('workout.create');
         Route::post('/workout', [WorkoutController::class, 'store'])->name('workout.store');
-        Route::get('/workout/{id}', [WorkoutController::class, 'show'])->name('workout.show');
+        Route::get('/workout/{workout}', [WorkoutController::class, 'show'])->name('workout.show');
+        Route::get('/workout/{workout}/edit', [WorkoutController::class, 'edit'])->name('workout.edit');
+        Route::patch('/workout/{workout}', [WorkoutController::class, 'update'])->name('workout.update');
+        Route::delete('/workout/{workout}', [WorkoutController::class, 'destroy'])->name('workout.destroy');
 
         Route::post(
-            '/workout/{id}/exercise',
+            '/workout/{workout}/exercise',
             [WorkoutExerciseController::class, 'store']
         )->name('workout.exercise.store');
         Route::get(
-            '/workout/{workout_id}/exercise/{exercise_id}',
+            '/workout/{workout}/exercise/{workoutExercise}',
             [WorkoutExerciseController::class, 'show']
         )->name('workout.exercise.show');
+        Route::delete(
+            '/workout/{workout}/exercise/{workoutExercise}',
+            [WorkoutExerciseController::class, 'destroy']
+        )->name('workout.exercise.destroy');
 
         Route::post(
-            '/workout/{workout_id}/exercise/{exercise_id}/log',
+            '/workout/{workout}/exercise/{workoutExercise}/log',
             [WorkoutExerciseLogController::class, 'store']
         )->name('workout.exercise.log.store');
+        Route::patch(
+            '/workout/{workout}/exercise/{workoutExercise}/log/{log}',
+            [WorkoutExerciseLogController::class, 'update']
+        )->name('workout.exercise.log.update');
+        Route::delete(
+            '/workout/{workout}/exercise/{workoutExercise}/log/{log}',
+            [WorkoutExerciseLogController::class, 'destroy']
+        )->name('workout.exercise.log.destroy');
     });
 });
 

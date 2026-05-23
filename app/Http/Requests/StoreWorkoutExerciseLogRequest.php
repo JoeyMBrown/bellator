@@ -2,30 +2,46 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Exercise;
+use App\Models\WorkoutExercise;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreWorkoutExerciseLogRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array //TODO: Flesh out rules, consider id naming convention here?
+    public function rules(): array
     {
-        return [
-            'repetitions' => ['required'],
-            'exercise_metric' => ['required'],
-            'workout_exercise_id' => ['nullable'],
-            'metric_unit_id' => ['nullable'],
-        ];
+        $workoutExercise = $this->route('workoutExercise');
+        $type = $workoutExercise instanceof WorkoutExercise
+            ? $workoutExercise->exercise?->measurement_type
+            : null;
+
+        return match ($type) {
+            Exercise::MEASUREMENT_REPS_ONLY => [
+                'repetitions' => ['required', 'integer', 'min:1'],
+            ],
+            Exercise::MEASUREMENT_WEIGHTED_REPS => [
+                'repetitions' => ['required', 'integer', 'min:1'],
+                'exercise_metric' => ['required', 'numeric', 'gt:0'],
+                'metric_unit_id' => ['required', 'integer', 'exists:metric_units,id'],
+            ],
+            Exercise::MEASUREMENT_DISTANCE => [
+                'exercise_metric' => ['required', 'numeric', 'gt:0'],
+                'metric_unit_id' => ['required', 'integer', 'exists:metric_units,id'],
+            ],
+            Exercise::MEASUREMENT_DURATION => [
+                'exercise_metric' => ['required', 'numeric', 'gt:0'],
+                'metric_unit_id' => ['nullable', 'integer', 'exists:metric_units,id'],
+            ],
+            default => [
+                'repetitions' => ['nullable', 'integer', 'min:1'],
+                'exercise_metric' => ['nullable', 'numeric'],
+                'metric_unit_id' => ['nullable', 'integer', 'exists:metric_units,id'],
+            ],
+        };
     }
 }
