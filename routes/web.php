@@ -5,6 +5,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupExerciseController;
 use App\Http\Controllers\GroupExercisePointsController;
 use App\Http\Controllers\GroupMemberController;
+use App\Http\Controllers\GroupMemberProfileController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkoutController;
@@ -41,6 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('groups.invite-code.regenerate');
 
         Route::delete('/groups/{group}/leave', [GroupMemberController::class, 'leave'])->name('groups.leave');
+        Route::get('/groups/{group}/members/{user}', [GroupMemberProfileController::class, 'show'])
+            ->name('groups.members.show');
         Route::delete('/groups/{group}/members/{user}', [GroupMemberController::class, 'destroy'])
             ->name('groups.members.destroy');
         Route::patch('/groups/{group}/members/{user}/role', [GroupMemberController::class, 'updateRole'])

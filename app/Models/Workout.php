@@ -41,6 +41,11 @@ class Workout extends Model
             ->withPivot('id', 'exercise_id', 'workout_id');
     }
 
+    public function workoutExercises(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WorkoutExercise::class);
+    }
+
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'workout_groups')

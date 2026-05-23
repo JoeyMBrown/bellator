@@ -1,18 +1,78 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import FeedCard from '@/Components/Groups/FeedCard';
+import Leaderboard from '@/Components/Groups/Leaderboard';
+import { Head, Link, router } from '@inertiajs/react';
 import { Group } from '@/types';
+
+type Window = 'week' | 'month' | 'all';
+
+type MeasurementType =
+    | 'reps_only'
+    | 'weighted_reps'
+    | 'distance'
+    | 'duration';
+
+interface FeedLog {
+    repetitions: number | null;
+    exercise_metric: number | null;
+    metric_unit_name: string | null;
+}
+
+interface FeedExercise {
+    id: number;
+    name: string;
+    measurement_type: MeasurementType;
+    logs: FeedLog[];
+}
+
+interface FeedWorkout {
+    id: number;
+    workout_date: string;
+    notes: string | null;
+    group_points_earned: number;
+    user: { id: string | null; name: string };
+    exercises: FeedExercise[];
+}
+
+interface LeaderboardRow {
+    user_id: string;
+    name: string;
+    rank: number;
+    total_points: number;
+    workout_count: number;
+    last_workout_date: string | null;
+}
 
 interface ShowProps {
     group: Group;
+    leaderboard: { window: Window; rows: LeaderboardRow[] };
+    feed: {
+        data: FeedWorkout[];
+        meta: {
+            current_page: number;
+            last_page: number;
+            per_page: number;
+            total: number;
+            has_more_pages: boolean;
+        };
+    };
 }
 
-export default function Show({ group }: ShowProps) {
+export default function Show({ group, leaderboard, feed }: ShowProps) {
     const canManage = group.role === 'owner' || group.role === 'admin';
 
     const copyCode = () => {
         if (typeof navigator !== 'undefined' && navigator.clipboard) {
             navigator.clipboard.writeText(group.invite_code).catch(() => {});
         }
+    };
+
+    const loadMore = () => {
+        router.get(
+            route('groups.show', group.id),
+            { window: leaderboard.window, feed_page: feed.meta.current_page + 1 },
+            { preserveScroll: true, preserveState: false },
+        );
     };
 
     return (
@@ -57,6 +117,36 @@ export default function Show({ group }: ShowProps) {
                     </Link>
                 </div>
 
+                <Leaderboard
+                    groupId={group.id}
+                    window={leaderboard.window}
+                    rows={leaderboard.rows}
+                />
+
+                <section className="space-y-3">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Activity
+                    </h3>
+                    {feed.data.length === 0 ? (
+                        <div className="rounded-lg bg-white p-4 text-sm text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-300">
+                            No workouts yet. Tap "Log workout" to start the feed.
+                        </div>
+                    ) : (
+                        feed.data.map((workout) => (
+                            <FeedCard key={workout.id} workout={workout} />
+                        ))
+                    )}
+                    {feed.meta.has_more_pages && (
+                        <button
+                            type="button"
+                            onClick={loadMore}
+                            className="block w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+                        >
+                            Load more
+                        </button>
+                    )}
+                </section>
+
                 <section className="rounded-lg bg-white p-5 shadow-sm dark:bg-gray-800">
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                         Invite code
@@ -77,27 +167,6 @@ export default function Show({ group }: ShowProps) {
 
                 <section className="rounded-lg bg-white p-5 shadow-sm dark:bg-gray-800">
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                        Members ({group.members.length})
-                    </h3>
-                    <ul className="mt-2 divide-y divide-gray-100 dark:divide-gray-700">
-                        {group.members.map((member) => (
-                            <li
-                                key={member.id}
-                                className="flex items-center justify-between py-2 text-sm"
-                            >
-                                <span className="text-gray-900 dark:text-gray-100">
-                                    {member.name}
-                                </span>
-                                <span className="text-xs uppercase text-gray-500">
-                                    {member.role}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-
-                <section className="rounded-lg bg-white p-5 shadow-sm dark:bg-gray-800">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                         Library
                     </h3>
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -114,16 +183,6 @@ export default function Show({ group }: ShowProps) {
                             Rubric
                         </Link>
                     </div>
-                </section>
-
-                <section className="rounded-lg bg-white p-5 shadow-sm dark:bg-gray-800">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                        Leaderboard & feed
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                        The leaderboard and activity feed will appear here once
-                        workouts are logged to this group.
-                    </p>
                 </section>
             </div>
         </AuthenticatedLayout>
