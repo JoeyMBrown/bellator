@@ -1,66 +1,142 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Bellator
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A closed social fitness app for small friend groups. Members log workouts, earn points via group-defined scoring rubrics, and compete on group-scoped leaderboards.
 
-## About Laravel
+See [`PRD.md`](./PRD.md) for the full product spec and [`Project-Summary.md`](./Project-Summary.md) for the pre-MVP code inventory.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend:** Laravel 11, PHP 8.2, MySQL 8
+- **Frontend:** Inertia.js + React 18 + TypeScript 5
+- **Styling:** Tailwind 3, MUI 6
+- **Build:** Vite 5
+- **Auth:** Laravel Breeze (session-based; email verification required)
+- **Local dev:** Laravel Sail (Docker)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Local setup
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Prerequisites: Docker, Composer, Node 20+.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+# 1. Install PHP deps
+composer install
 
-## Laravel Sponsors
+# 2. Boot Sail (MySQL, mailpit, redis)
+./vendor/bin/sail up -d
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 3. Set up environment
+cp .env.example .env
+./vendor/bin/sail artisan key:generate
 
-### Premium Partners
+# 4. Install + build frontend
+npm install
+npm run dev          # watch mode for development
+# or:
+npm run build        # one-shot production build
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+# 5. Run migrations + seed reference data
+./vendor/bin/sail artisan migrate --seed
+```
 
-## Contributing
+The app will be at <http://localhost> (or whatever `APP_PORT` you set).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+`migrate --seed` seeds metric units, a dev `admin@bellator.com` user (password: `password`), and the default workout types. **Exercises are no longer globally seeded** — each group gets its own copy of the default exercise set when it's created.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Running tests
 
-## Security Vulnerabilities
+```bash
+./vendor/bin/sail test                       # full suite
+./vendor/bin/sail test --filter=LeaderboardFeedTest
+./vendor/bin/sail test --filter=PointsCalculationServiceTest
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The test database is the `testing` schema, created automatically by Sail's MySQL service. Tests use `RefreshDatabase` so the schema is rebuilt for each test class.
 
-## License
+CI runs the same `php artisan test` against MySQL 8 in GitHub Actions — see [`.github/workflows/ci.yml`](./.github/workflows/ci.yml). Merge protection should require this workflow to pass.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Domain model overview
+
+| Model                      | Purpose                                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------------------|
+| `User`                     | UUID-keyed; soft-deletes cascade to workouts/logs (FR-AUTH-6).                                           |
+| `Group`                    | A friend-group. Owns its exercise library and point rubric. `invite_code` is `BELL-XXXXXXXX`.            |
+| `GroupMember`              | `(group, user, role)` pivot with role ∈ {`owner`, `admin`, `member`}.                                    |
+| `Exercise`                 | Per-group; has a `measurement_type` ∈ {`reps_only`, `weighted_reps`, `distance`, `duration`}.            |
+| `GroupExercisePoints`      | Rate history per (group, exercise). At most one active row (`end_date IS NULL`).                         |
+| `Workout`                  | A logged session, tagged to ≥1 group via `workout_groups`.                                               |
+| `WorkoutExercise`          | A workout↔exercise pivot.                                                                                |
+| `WorkoutExerciseLog`       | A single set/log row; shape depends on the exercise's measurement type.                                  |
+| `WorkoutExerciseLogPoints` | Per-(log, group) snapshot of points earned. Computed at log time; backfilled on first-time rubric set.   |
+
+---
+
+## Key flows
+
+- **First-time user:** register → verify email → land on `/onboarding` (Group Gate). Either join an existing group via invite code or create a new one with a preset rubric (Strength / Endurance / Balanced).
+- **Logging a workout:** from a group home, tap "Log workout" → pick date + notes + tagged groups → add exercises from any of those groups → log sets. Each saved set writes per-group point snapshots into `workout_exercise_log_points`.
+- **Leaderboard:** group home shows `This Week | This Month | All Time`. Week starts Monday 00:00 **in the group's timezone**.
+- **Activity feed:** reverse-chronological list of workouts tagged to the group, 20 per page, with the exercise rows consolidated (`5 × 5 @ 185 lbs`, `5 sets, 135–225 lbs`, etc.).
+- **Group settings:** owner/admin can rename, regenerate invite code, manage members, manage exercises, and edit the rubric (anchor-based input).
+
+---
+
+## Project layout
+
+```
+app/
+  Http/Controllers/        # Group, GroupExercise, GroupExercisePoints,
+                           # GroupMember, GroupMemberProfile, Workout,
+                           # WorkoutExercise, WorkoutExerciseLog, Dashboard,
+                           # Onboarding, Profile, Auth/*
+  Http/Middleware/         # EnsureUserHasGroup, HandleInertiaRequests
+  Http/Requests/           # Store/Update form requests for every action
+  Jobs/                    # BackfillGroupExerciseLogPointsJob
+  Models/                  # See table above
+  Policies/                # GroupPolicy, ExercisePolicy, WorkoutPolicy,
+                           # WorkoutExerciseLogPolicy, GroupExercisePointsPolicy
+  Services/                # GroupService, GroupExercisePointsService,
+                           # WorkoutService, WorkoutExerciseService,
+                           # WorkoutExerciseLogService, PointsCalculationService,
+                           # LeaderboardService, ActivityFeedService
+  Support/                 # DefaultExercises, PresetRubrics
+database/
+  factories/               # Every domain model has a factory
+  migrations/              # 2024-* baseline + 2026-* MVP work
+  seeders/                 # MetricUnitsSeeder + dev User/WorkoutTypes
+resources/js/
+  Pages/                   # Onboarding, Groups (Create/Show/Edit/Members/
+                           # Exercises/Rubric), Workouts (Index/Create/Show/
+                           # Edit, Exercises/Show), Profile, Auth, Welcome
+  Components/Groups/       # GroupSwitcher, FlashMessages, Leaderboard, FeedCard
+  Contexts/GroupContext.tsx # last-viewed group via localStorage
+  Layouts/                 # AuthenticatedLayout (with GroupContextProvider)
+routes/
+  web.php                  # all app routes (auth/verified/group.member guards)
+  auth.php                 # Breeze auth routes
+tests/
+  Feature/                 # Per-controller feature tests
+  Unit/                    # Policy + service tests
+```
+
+---
+
+## Things worth knowing
+
+- All timestamps stored in UTC. Display formatting is the viewer's responsibility (`dayjs` on the frontend). Leaderboard week/month cutoffs are computed in the **group's** timezone.
+- Job queue: `sync` driver in tests + CI. Production starts on `database` and can be switched later without code changes.
+- Policies are auto-discovered by Laravel 11's class-name convention; no explicit registration in `AppServiceProvider`.
+- Workout edits that change the tagged-group set rebuild `workout_exercise_log_points` for every log on the workout — see `WorkoutExerciseLogService::rebuildPointsForWorkout`.
+
+---
+
+## Future considerations
+
+Tracked in [`PRD.md` §14](./PRD.md). Highest-likelihood next-iteration items: reactions/comments, notifications, group ownership transfer, streaks, PWA.
