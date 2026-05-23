@@ -5,11 +5,15 @@ namespace App\Services;
 use App\Models\Group;
 use App\Models\GroupMember;
 use App\Models\User;
+use App\Support\DefaultExercises;
+use App\Support\PresetRubrics;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class GroupService
 {
+    public function __construct(protected GroupExercisePointsService $pointsService) {}
+
     public function generateInviteCode(): string
     {
         do {
@@ -36,6 +40,13 @@ class GroupService
                 'role' => GroupMember::ROLE_OWNER,
                 'joined_at' => now(),
             ]);
+
+            DefaultExercises::seedForGroup($group, $owner);
+
+            $preset = $attributes['preset_rubric'] ?? null;
+            if ($preset !== null && in_array($preset, PresetRubrics::ALL, true)) {
+                $this->pointsService->applyPreset($group, $preset);
+            }
 
             return $group;
         });

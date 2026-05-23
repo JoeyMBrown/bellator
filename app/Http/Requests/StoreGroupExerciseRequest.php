@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Exercise;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreGroupRequest extends FormRequest
+class StoreGroupExerciseRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,8 +18,7 @@ class StoreGroupRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:60'],
             'description' => ['nullable', 'string', 'max:140'],
-            'timezone' => ['nullable', 'string', 'max:64', 'timezone'],
-            'preset_rubric' => ['nullable', 'string', 'in:strength,endurance,balanced'],
+            'measurement_type' => ['required', Rule::in(Exercise::MEASUREMENT_TYPES)],
         ];
     }
 }

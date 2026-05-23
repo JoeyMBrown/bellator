@@ -256,6 +256,26 @@ export default function Edit({ group }: EditProps) {
 
                 <section className="space-y-3 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        Library
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                        <Link
+                            href={route('groups.exercises.index', group.id)}
+                            className="rounded-md bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+                        >
+                            Manage exercises
+                        </Link>
+                        <Link
+                            href={route('groups.rubric.index', group.id)}
+                            className="rounded-md bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+                        >
+                            Manage rubric
+                        </Link>
+                    </div>
+                </section>
+
+                <section className="space-y-3 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                         Danger zone
                     </h3>
                     {!isOwner && (

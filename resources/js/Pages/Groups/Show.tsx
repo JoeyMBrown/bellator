@@ -83,6 +83,26 @@ export default function Show({ group }: ShowProps) {
 
                 <section className="rounded-lg bg-white p-5 shadow-sm dark:bg-gray-800">
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Library
+                    </h3>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                        <Link
+                            href={route('groups.exercises.index', group.id)}
+                            className="rounded-md bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+                        >
+                            Exercises
+                        </Link>
+                        <Link
+                            href={route('groups.rubric.index', group.id)}
+                            className="rounded-md bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+                        >
+                            Rubric
+                        </Link>
+                    </div>
+                </section>
+
+                <section className="rounded-lg bg-white p-5 shadow-sm dark:bg-gray-800">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                         Leaderboard & feed
                     </h3>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">

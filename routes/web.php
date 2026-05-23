@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\GroupExerciseController;
+use App\Http\Controllers\GroupExercisePointsController;
 use App\Http\Controllers\GroupMemberController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
@@ -43,6 +45,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('groups.members.destroy');
         Route::patch('/groups/{group}/members/{user}/role', [GroupMemberController::class, 'updateRole'])
             ->name('groups.members.role');
+
+        Route::get('/groups/{group}/exercises', [GroupExerciseController::class, 'index'])
+            ->name('groups.exercises.index');
+        Route::post('/groups/{group}/exercises', [GroupExerciseController::class, 'store'])
+            ->name('groups.exercises.store');
+        Route::patch('/groups/{group}/exercises/{exercise}', [GroupExerciseController::class, 'update'])
+            ->name('groups.exercises.update');
+        Route::delete('/groups/{group}/exercises/{exercise}', [GroupExerciseController::class, 'destroy'])
+            ->name('groups.exercises.destroy');
+
+        Route::get('/groups/{group}/rubric', [GroupExercisePointsController::class, 'index'])
+            ->name('groups.rubric.index');
+        Route::put('/groups/{group}/rubric/{exercise}', [GroupExercisePointsController::class, 'store'])
+            ->name('groups.rubric.store');
 
         Route::get('/workout/create', [WorkoutController::class, 'create'])->name('workout.create');
         Route::get('/workouts', [WorkoutController::class, 'index'])->name('workout.index');
