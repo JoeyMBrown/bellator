@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Http\Resources\GroupResource;
+use App\Http\Resources\WorkoutFeedCollection;
 use App\Models\Group;
-use App\Models\Workout;
 use App\Services\ActivityFeedService;
 use App\Services\GroupService;
 use App\Services\LeaderboardService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -52,26 +52,23 @@ class GroupController extends Controller
         $feed = $this->feed->forGroup($group, $page);
 
         return Inertia::render('Groups/Show', [
-            'group' => $this->presentGroup($group),
+            'group' => GroupResource::make($group)->resolve($request),
             'leaderboard' => [
                 'window' => $window,
                 'rows' => $this->leaderboard->forGroup($group, $window)->all(),
             ],
-            'feed' => [
-                'data' => $feed->getCollection()->map(fn (Workout $w) => $this->presentWorkoutForFeed($w))->all(),
-                'meta' => $this->presentFeedMeta($feed),
-            ],
+            'feed' => (new WorkoutFeedCollection($feed))->resolve($request),
         ]);
     }
 
-    public function edit(Group $group): Response
+    public function edit(Request $request, Group $group): Response
     {
         $this->authorize('update', $group);
 
         $group->load(['members.user']);
 
         return Inertia::render('Groups/Edit', [
-            'group' => $this->presentGroup($group),
+            'group' => GroupResource::make($group)->resolve($request),
         ]);
     }
 
@@ -106,66 +103,6 @@ class GroupController extends Controller
         return redirect()
             ->route('groups.edit', $group)
             ->with('success', 'Invite code regenerated.');
-    }
-
-    protected function presentGroup(Group $group): array
-    {
-        $user = Auth::user();
-
-        return [
-            'id' => $group->id,
-            'name' => $group->name,
-            'description' => $group->description,
-            'invite_code' => $group->invite_code,
-            'timezone' => $group->timezone,
-            'created_at' => $group->created_at,
-            'role' => $group->roleFor($user),
-            'members' => $group->members->map(fn ($member) => [
-                'id' => $member->id,
-                'user_id' => $member->user_id,
-                'name' => $member->user?->name ?? 'Former member',
-                'email' => $member->user?->email,
-                'role' => $member->role,
-                'joined_at' => $member->joined_at,
-            ])->values()->all(),
-        ];
-    }
-
-    protected function presentWorkoutForFeed(Workout $workout): array
-    {
-        return [
-            'id' => $workout->id,
-            'workout_date' => $workout->workout_date,
-            'notes' => $workout->notes,
-            'group_points_earned' => $workout->group_points_earned !== null
-                ? (float) $workout->group_points_earned
-                : 0.0,
-            'user' => [
-                'id' => $workout->user?->id,
-                'name' => $workout->user?->name ?? 'Former member',
-            ],
-            'exercises' => $workout->workoutExercises->map(fn ($we) => [
-                'id' => $we->exercise?->id,
-                'name' => $we->exercise?->name ?? 'Removed exercise',
-                'measurement_type' => $we->exercise?->measurement_type,
-                'logs' => $we->workoutExerciseLogs->map(fn ($log) => [
-                    'repetitions' => $log->repetitions !== null ? (int) $log->repetitions : null,
-                    'exercise_metric' => $log->exercise_metric !== null ? (float) $log->exercise_metric : null,
-                    'metric_unit_name' => $log->metricUnit?->name,
-                ])->values()->all(),
-            ])->values()->all(),
-        ];
-    }
-
-    protected function presentFeedMeta(LengthAwarePaginator $paginator): array
-    {
-        return [
-            'current_page' => $paginator->currentPage(),
-            'last_page' => $paginator->lastPage(),
-            'per_page' => $paginator->perPage(),
-            'total' => $paginator->total(),
-            'has_more_pages' => $paginator->hasMorePages(),
-        ];
     }
 
     protected function resolveWindow(?string $window): string
