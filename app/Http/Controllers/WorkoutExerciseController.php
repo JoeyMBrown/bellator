@@ -3,102 +3,73 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWorkoutExerciseRequest;
+use App\Models\MetricUnit;
 use App\Models\Workout;
 use App\Models\WorkoutExercise;
-use App\Services\MetricUnitService;
-// use App\Services\WorkoutExerciseService;
-use Illuminate\Http\Request;
+use App\Services\WorkoutExerciseService;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class WorkoutExerciseController extends Controller
 {
-    protected $workoutExerciseService;
+    public function __construct(protected WorkoutExerciseService $workoutExercises) {}
 
-    protected $metricUnitService;
-
-    // TODO: Create service class
-
-     public function __construct(MetricUnitService $metricUnitService)
+    public function store(StoreWorkoutExerciseRequest $request, Workout $workout): RedirectResponse
     {
-    //     $this->workoutExerciseService = $workoutExerciseService;
-        $this->metricUnitService = $metricUnitService;
-    }
+        $this->authorize('update', $workout);
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreWorkoutExerciseRequest $request, $id)
-    {
-        $data = $request->validated(); // TODO: Update validation roles to ensure both the workout and exercise exist before storing.
-
-        // TODO: Abstract to service class
-        // TODO: Error handling of ALL controller methods
-        $workout = Workout::find($id);
-
-        // This associates an exercise with the current workout.
-        $workout->exercises()->attach($data['id']);
+        $this->workoutExercises->add($workout, (int) $request->validated()['exercise_id']);
 
         return redirect()
-            ->route('workout.show', $id)
-            ->with('success', 'Exercise added to Workout.');
-
+            ->route('workout.show', $workout)
+            ->with('success', 'Exercise added.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $workout_id, string $exercise_id)
+    public function show(Workout $workout, WorkoutExercise $workoutExercise): Response
     {
-        // TODO: Abstract to service class
-        
+        $this->authorize('view', $workout);
+        abort_if($workoutExercise->workout_id !== $workout->id, 404);
+
+        $workoutExercise->load(['exercise', 'workoutExerciseLogs.metricUnit']);
+
         return Inertia::render('Workouts/Exercises/Show', [
-            'workoutExercise' => WorkoutExercise::with([
-                    'workoutExerciseLogs.metricUnit',
-                    'exercise',
-                    'workout'
-                ])
-                ->find($exercise_id),
-            'metricUnitOptions' => $this->metricUnitService->toOptionsArray()
+            'workout' => [
+                'id' => $workout->id,
+                'workout_date' => $workout->workout_date,
+                'is_owner' => $workout->user_id === auth()->id(),
+            ],
+            'workoutExercise' => [
+                'id' => $workoutExercise->id,
+                'exercise' => [
+                    'id' => $workoutExercise->exercise->id,
+                    'name' => $workoutExercise->exercise->name,
+                    'measurement_type' => $workoutExercise->exercise->measurement_type,
+                ],
+                'logs' => $workoutExercise->workoutExerciseLogs->map(fn ($log) => [
+                    'id' => $log->id,
+                    'repetitions' => $log->repetitions,
+                    'exercise_metric' => $log->exercise_metric !== null ? (float) $log->exercise_metric : null,
+                    'metric_unit_id' => $log->metric_unit_id,
+                    'metric_unit_name' => $log->metricUnit?->name,
+                ])->all(),
+            ],
+            'metricUnitOptions' => MetricUnit::query()->get(['id', 'name'])->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+            ]),
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy(Workout $workout, WorkoutExercise $workoutExercise): RedirectResponse
     {
-        //
-    }
+        $this->authorize('update', $workout);
+        abort_if($workoutExercise->workout_id !== $workout->id, 404);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $this->workoutExercises->remove($workoutExercise);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()
+            ->route('workout.show', $workout)
+            ->with('success', 'Exercise removed from workout.');
     }
 }

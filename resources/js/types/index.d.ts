@@ -1,68 +1,43 @@
 export interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
     email_verified_at?: string;
+    timezone?: string;
 }
 
-export interface Workout {
+export type GroupRole = 'owner' | 'admin' | 'member';
+
+export type MeasurementType =
+    | 'reps_only'
+    | 'weighted_reps'
+    | 'distance'
+    | 'duration';
+
+export interface UserGroupSummary {
     id: number;
-    workout_date: string;
-    workout_type_id: null | number;
+    name: string;
+    role: GroupRole;
+}
+
+export interface GroupMemberSummary {
+    id: number;
     user_id: string;
-    exercises?: Array<Exercise | []>;
-    created_at: null | string;
-    updated_at: null | string;
-    deleted_at: null | string;
+    name: string;
+    email: string | null;
+    role: GroupRole;
+    joined_at: string;
 }
 
-export interface Exercise {
+export interface Group {
     id: number;
     name: string;
-    description: string;
-    created_at: null | string;
-    updated_at: null | string;
-    deleted_at: null | string;
-}
-
-export interface WorkoutExercise {
-    id: number;
-    workout_id: number;
-    exercise_id: number;
-    workout?: Workout;
-    exercise?: Exercise;
-    created_at: null | string;
-    update_at: null | string;
-    deleted_at: null | string;
-    workout_exercise_logs?: Array<WorkoutExerciseLog | []>;
-}
-
-export interface MetricUnit {
-    id: number;
-    name: string;
-    description: string;
-    created_at: null | string;
-    update_at: null | string;
-    deleted_at: null | string;
-}
-
-export interface WorkoutExerciseLog {
-    id: number;
-    repitions: number;
-    exercise_metric: number;
-    exercise_points: number;
-    workout_exercise_id: number;
-    metric_unit_id: number;
-    metric_unit?: MetricUnit;
-}
-
-export interface WorkoutList {
-    workouts: Array<null | Workout>;
-}
-
-export interface Option {
-    id: number,
-    name: string
+    description: string | null;
+    invite_code: string;
+    timezone: string;
+    created_at: string;
+    role: GroupRole | null;
+    members: GroupMemberSummary[];
 }
 
 export type PageProps<
@@ -71,4 +46,9 @@ export type PageProps<
     auth: {
         user: User;
     };
+    flash: {
+        success: string | null;
+        error: string | null;
+    };
+    userGroups: UserGroupSummary[];
 };

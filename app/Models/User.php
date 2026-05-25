@@ -2,44 +2,31 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasUuids;
+    use HasFactory, HasUuids, Notifiable, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'timezone',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -48,11 +35,41 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the workouts for the user.
-     */
     public function workouts(): HasMany
     {
         return $this->hasMany(Workout::class);
+    }
+
+    public function groupMemberships(): HasMany
+    {
+        return $this->hasMany(GroupMember::class);
+    }
+
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_members')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * On (soft) delete, cascade to the user's workouts and their nested
+     * workout_exercises and workout_exercise_logs. FR-AUTH-6.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user) {
+            if ($user->isForceDeleting()) {
+                return;
+            }
+
+            $user->workouts()->each(function (Workout $workout) {
+                $workout->workoutExercises()->each(function (WorkoutExercise $we) {
+                    $we->workoutExerciseLogs()->delete();
+                    $we->delete();
+                });
+                $workout->delete();
+            });
+        });
     }
 }

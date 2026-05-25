@@ -76,7 +76,10 @@ class ProfileTest extends TestCase
             ->assertRedirect('/');
 
         $this->assertGuest();
-        $this->assertNull($user->fresh());
+        // Account deletion is soft-delete (FR-AUTH-6) so the row remains
+        // but with deleted_at set. Model::fresh() bypasses scopes, so we
+        // check the soft-delete marker rather than asserting null.
+        $this->assertSoftDeleted($user);
     }
 
     public function test_correct_password_must_be_provided_to_delete_account(): void

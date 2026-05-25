@@ -6,23 +6,15 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreWorkoutExerciseRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array //TODO: Strictin rules, consider id naming convention here?
+    public function rules(): array
     {
         return [
-            'id' => ['required']
+            'exercise_id' => ['required', 'integer', 'exists:exercises,id'],
         ];
     }
 }

@@ -3,91 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWorkoutExerciseLogRequest;
+use App\Http\Requests\UpdateWorkoutExerciseLogRequest;
+use App\Models\Workout;
+use App\Models\WorkoutExercise;
 use App\Models\WorkoutExerciseLog;
-// use App\Services\WorkoutExerciseLogService;
-use Illuminate\Http\Request;
+use App\Services\WorkoutExerciseLogService;
+use Illuminate\Http\RedirectResponse;
 
 class WorkoutExerciseLogController extends Controller
 {
-    protected $workoutExerciseService;
+    public function __construct(protected WorkoutExerciseLogService $logs) {}
 
-    protected $metricUnitService;
+    public function store(
+        StoreWorkoutExerciseLogRequest $request,
+        Workout $workout,
+        WorkoutExercise $workoutExercise,
+    ): RedirectResponse {
+        $this->authorize('update', $workout);
+        abort_if($workoutExercise->workout_id !== $workout->id, 404);
 
-    // TODO: Create service class
-
-     public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreWorkoutExerciseLogRequest $request, $workout_id, $exercise_id)
-    {
-        $data = $request->validated(); // TODO: Update validation roles to ensure both the workout and exercise exist before storing.
-
-        // TODO: Error handling of ALL controller methods.
-        // TODO: Point calculation on storage.
-        // TODO: Proper route redirection on save.
-
-        WorkoutExerciseLog::create([
-            'repitions' => $data['repitions'],
-            'exercise_metric' => $data['exercise_metric'],
-            'workout_exercise_id' => $exercise_id,
-            'metric_unit_id' => $data['metric_unit_id']
-        ]);
+        $this->logs->create($workoutExercise, $request->validated());
 
         return redirect()
-            ->route('workout.exercise.show', [$workout_id, $exercise_id])
-            ->with('success', 'Exercise logged successfully.');
+            ->route('workout.exercise.show', [$workout, $workoutExercise])
+            ->with('success', 'Set logged.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $workout_id, string $exercise_id)
-    {
-        //
+    public function update(
+        UpdateWorkoutExerciseLogRequest $request,
+        Workout $workout,
+        WorkoutExercise $workoutExercise,
+        WorkoutExerciseLog $log,
+    ): RedirectResponse {
+        $this->authorize('update', $log);
+        abort_if($workoutExercise->workout_id !== $workout->id, 404);
+        abort_if($log->workout_exercise_id !== $workoutExercise->id, 404);
+
+        $this->logs->update($log, $request->validated());
+
+        return redirect()
+            ->route('workout.exercise.show', [$workout, $workoutExercise])
+            ->with('success', 'Set updated.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    public function destroy(
+        Workout $workout,
+        WorkoutExercise $workoutExercise,
+        WorkoutExerciseLog $log,
+    ): RedirectResponse {
+        $this->authorize('delete', $log);
+        abort_if($workoutExercise->workout_id !== $workout->id, 404);
+        abort_if($log->workout_exercise_id !== $workoutExercise->id, 404);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $this->logs->delete($log);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()
+            ->route('workout.exercise.show', [$workout, $workoutExercise])
+            ->with('success', 'Set removed.');
     }
 }

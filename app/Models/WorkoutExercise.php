@@ -14,6 +14,8 @@ class WorkoutExercise extends Pivot
 
     protected $table = 'workout_exercises';
 
+    public $incrementing = true;
+
     /**
      * The attributes that are mass assignable.
      *

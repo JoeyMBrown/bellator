@@ -11,29 +11,13 @@ class MetricUnit extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
-        'description'
+        'description',
     ];
 
-    /**
-     * The workout exercise logs that belong to the metric unit.
-     */
     public function workoutExerciseLogs(): HasMany
     {
         return $this->hasMany(WorkoutExerciseLog::class);
-    }
-
-    /**
-     * The exercise points history that belong to the metric unit.
-     */
-    public function exercisePointsHistory(): HasMany
-    {
-        return $this->hasMany(ExercisePointHistory::class);
     }
 }
