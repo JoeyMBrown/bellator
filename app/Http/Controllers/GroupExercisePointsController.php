@@ -44,7 +44,7 @@ class GroupExercisePointsController extends Controller
                     'points_per_unit' => $points?->points_per_unit !== null
                         ? (float) $points->points_per_unit
                         : null,
-                    'pending_log_count' => $this->pendingLogCount($group, $exercise),
+                    'pending_log_count' => $this->pendingLogCount($group, $exercise), // TODO: Rename to pendingSetCount here and on frontend.
                 ];
             });
 
@@ -73,6 +73,7 @@ class GroupExercisePointsController extends Controller
             ->with('success', 'Points updated.');
     }
 
+    // TODO: Rename to pendingSetCount here and on frontend.
     protected function pendingLogCount(Group $group, Exercise $exercise): int
     {
         return WorkoutExerciseLogPoints::query()

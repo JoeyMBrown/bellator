@@ -26,6 +26,7 @@ class LeaderboardService
     {
         $startUtc = $this->windowStartUtc($group, $window);
 
+        // When performing aggregate queries it makes sense to reach for the raw query builder over Eloquent.
         $workoutStats = DB::table('workouts')
             ->join('workout_groups', 'workout_groups.workout_id', '=', 'workouts.id')
             ->where('workout_groups.group_id', $group->id)
@@ -40,6 +41,7 @@ class LeaderboardService
             ->get()
             ->keyBy('user_id');
 
+        // When performing aggregate queries it makes sense to reach for the raw query builder over Eloquent.
         $pointsStats = DB::table('workout_exercise_log_points')
             ->join('workout_exercise_logs', 'workout_exercise_logs.id', '=', 'workout_exercise_log_points.workout_exercise_log_id')
             ->join('workout_exercises', 'workout_exercises.id', '=', 'workout_exercise_logs.workout_exercise_id')

@@ -13,6 +13,7 @@ class Exercise extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // TODO: Potentially this gets moved to a database?
     public const MEASUREMENT_REPS_ONLY = 'reps_only';
 
     public const MEASUREMENT_WEIGHTED_REPS = 'weighted_reps';
