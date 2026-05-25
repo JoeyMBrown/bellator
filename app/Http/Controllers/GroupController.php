@@ -52,7 +52,7 @@ class GroupController extends Controller
         $feed = $this->feed->forGroup($group, $page);
 
         return Inertia::render('Groups/Show', [
-            'group' => GroupResource::make($group)->resolve($request),
+            'group' => new GroupResource($group),
             'leaderboard' => [
                 'window' => $window,
                 'rows' => $this->leaderboard->forGroup($group, $window)->all(),
@@ -68,7 +68,7 @@ class GroupController extends Controller
         $group->load(['members.user']);
 
         return Inertia::render('Groups/Edit', [
-            'group' => GroupResource::make($group)->resolve($request),
+            'group' => new GroupResource($group),
         ]);
     }
 
