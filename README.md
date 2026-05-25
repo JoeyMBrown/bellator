@@ -8,7 +8,7 @@ See [`PRD.md`](./PRD.md) for the full product spec and [`Project-Summary.md`](./
 
 ## Stack
 
-- **Backend:** Laravel 11, PHP 8.2, MySQL 8
+- **Backend:** Laravel 11, PHP 8.2, PostgreSQL 17
 - **Frontend:** Inertia.js + React 18 + TypeScript 5
 - **Styling:** Tailwind 3, MUI 6
 - **Build:** Vite 5
@@ -25,7 +25,7 @@ Prerequisites: Docker, Composer, Node 20+.
 # 1. Install PHP deps
 composer install
 
-# 2. Boot Sail (MySQL, mailpit, redis)
+# 2. Boot Sail (PostgreSQL, mailpit, redis)
 ./vendor/bin/sail up -d
 
 # 3. Set up environment
@@ -56,9 +56,9 @@ The app will be at <http://localhost> (or whatever `APP_PORT` you set).
 ./vendor/bin/sail test --filter=PointsCalculationServiceTest
 ```
 
-The test database is the `testing` schema, created automatically by Sail's MySQL service. Tests use `RefreshDatabase` so the schema is rebuilt for each test class.
+The test database is the `testing` database, created automatically by Sail's PostgreSQL service. Tests use `RefreshDatabase` so the schema is rebuilt for each test class.
 
-CI runs the same `php artisan test` against MySQL 8 in GitHub Actions — see [`.github/workflows/ci.yml`](./.github/workflows/ci.yml). Merge protection should require this workflow to pass.
+CI runs the same `php artisan test` against PostgreSQL 17 in GitHub Actions — see [`.github/workflows/ci.yml`](./.github/workflows/ci.yml). Merge protection should require this workflow to pass.
 
 ---
 
